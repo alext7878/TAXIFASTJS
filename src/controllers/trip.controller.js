@@ -32,8 +32,45 @@ const getTripsByStatus = async (req, res, next) => {
   }
 };
 
+const getTripsByUser = async (req, res, next) => {
+  try {
+    const {userId} = req.params
+    const trips = await model.getTripsByUser(userId)
+    res.status(200).json(trips);
+  } catch (error) {
+    console.error("Error al obtener viaje:", error);
+    res.status(500).json({ error: "Error al obtener viaje" });
+  }
+};
+
+const getTripsByDriver = async (req, res, next) => {
+  try {
+    const {driverId} = req.params
+    const trips = await model.getTripsDriver(driverId)
+    res.status(200).json(trips);
+  } catch (error) {
+    console.error("Error al obtener viaje:", error);
+    res.status(500).json({ error: "Error al obtener viaje" });
+  }
+};
+
+const cancelTrip = async (req, res, next) => {
+  try {
+    const { idTrip, idUser } = req.params;
+    const trip = await model.cancelTrip(idTrip, idUser);
+    res.status(200).json(trip);
+  } catch (error) {
+    console.error("Error al cancelar viaje:", error);
+    res.status(500).json({ error: "Error al cancelar viaje" });
+  }
+}
+
+
 module.exports = {
   createTrip,
   acceptTrip,
-  getTripsByStatus
+  getTripsByStatus,
+  getTripsByUser,
+  cancelTrip ,
+  getTripsByDriver
 };

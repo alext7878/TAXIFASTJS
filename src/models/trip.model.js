@@ -6,17 +6,19 @@ const createTrip = async (trip) => {
 user_id,
 driver_id,
 start_location,
+direction,
 destination,
 status,
 payment_method
 )
 VALUES
-(?,?,?,?,?,?);`;
+(?,?,?,?,?,?,?);`;
 
   await pool.query(query, [
     trip.user_id,
     trip.driver_id,
     trip.start_location,
+    trip.direction,
     trip.destination,
     trip.status,
     trip.payment_method,
@@ -40,15 +42,46 @@ const acceptTrip = async (idTrip, data) => {
   return trip;
 };
 
-const getTripsByStatus = async(status) => {
-    const query = "select * from taxifast.trips where status = ?;"
-     const trips = await pool.query(query, [status])
-    return trips[0]
-}
+const getTripsByStatus = async (status) => {
+  const query = `select t.*, u.full_name from taxifast.trips t
+    join taxifast.users u
+on u.id = t.user_id where status = ?;`;
+  const trips = await pool.query(query, [status]);
+  return trips[0];
+};
 
+const getTripsByUser = async (userId) => {
+  const query = `select t.*, u.full_name from taxifast.trips t
+    join taxifast.users u
+on u.id = t.user_id where user_id = ? and (t.status =? or t.status =?);`;
+  const trips = await pool.query(query, [userId, "Pendiente", "En Curso"]);
+  return trips[0][0];
+};
+
+const getTripsDriver = async (driverId) => {
+  const query = `select t.*, u.full_name from taxifast.trips t
+    join taxifast.drivers u
+on u.id = t.driver_id where driver_id = ? and t.status =?;`;
+  const trips = await pool.query(query, [driverId, "Pendiente"]);
+  return trips[0][0];
+};
+
+const cancelTrip = async (idTrip, idUser) => {
+  const query = `update taxifast.trips set status = ? where id = ? and user_id = ?`;
+
+  const trip = await pool.query(query, [
+    "Cancelado",
+    idTrip,
+    idUser
+  ]);
+  return trip;
+};
 
 module.exports = {
   createTrip,
   acceptTrip,
-  getTripsByStatus
+  getTripsByStatus,
+  getTripsByUser,
+  cancelTrip ,
+  getTripsDriver
 };

@@ -1,4 +1,5 @@
 const express = require("express")
+const cors = require("cors")
 const app = express()
 
 const authRoutes = require("./routes/auth.routes")
@@ -7,6 +8,10 @@ const driverRoutes = require("./routes/driver.routes")
 const tripRoutes = require("./routes/trip.routes")
 
 app.use(express.json())
+const corsOptions = {
+    origin: "http://localhost:4200"
+}
+app.use(cors(corsOptions))
 
 app.use(authRoutes)
 app.use(userRoutes)
