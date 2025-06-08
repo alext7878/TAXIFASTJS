@@ -31,8 +31,8 @@ const login = async (req, res, next) => {
 
 const register = async (req, res, next) => {
   try {
-    await model.register(req.body);
-    res.json({ message: "usuario creado" });
+    const user = await model.register(req.body);
+    res.json(user);
   } catch (error) {
     console.log(error);
   }
@@ -40,8 +40,8 @@ const register = async (req, res, next) => {
 
 const registerDriver = async (req, res, next) => {
   try {
-    await model.registerDriver(req.body);
-    res.json({ message: "conductor creado" });
+    const user = await model.registerDriver(req.body);
+    res.json(user);
   } catch (error) {
     console.log(error);
   }
