@@ -54,6 +54,17 @@ const getTripsByDriver = async (req, res, next) => {
   }
 };
 
+const getTripByDriver = async (req, res, next) => {
+  try {
+    const {driverId, tripId} = req.params
+    const trips = await model.getTripByDriver(driverId, tripId)
+    res.status(200).json(trips);
+  } catch (error) {
+    console.error("Error al obtener viaje:", error);
+    res.status(500).json({ error: "Error al obtener viaje" });
+  }
+};
+
 const cancelTrip = async (req, res, next) => {
   try {
     const { idTrip, idUser } = req.params;
@@ -72,5 +83,6 @@ module.exports = {
   getTripsByStatus,
   getTripsByUser,
   cancelTrip ,
-  getTripsByDriver
+  getTripsByDriver,
+  getTripByDriver
 };

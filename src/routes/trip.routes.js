@@ -7,7 +7,6 @@ router.get("/trip", tripController.getTripsByStatus )
 router.get("/trip/user/:userId", tripController.getTripsByUser )
 router.put("/trip/:idTrip/user/:idUser", tripController.cancelTrip )
 router.get("/trip/driver/:driverId", tripController.getTripsByDriver )
-
-
+router.get("/trip/:tripId/driver/:driverId", tripController.getTripByDriver)
 
 module.exports = router
