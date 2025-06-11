@@ -61,8 +61,16 @@ on u.id = t.user_id where user_id = ? and (t.status =? or t.status =?);`;
 const getTripsDriver = async (driverId) => {
   const query = `select t.*, u.full_name from taxifast.trips t
     join taxifast.drivers u
-on u.id = t.driver_id where driver_id = ? and t.status =?;`;
-  const trips = await pool.query(query, [driverId, "Pendiente"]);
+on u.id = t.driver_id where driver_id = ?;`;
+  const trips = await pool.query(query, [driverId]);
+  return trips[0][0];
+};
+
+const getTripByDriver = async (driverId, tripId) => {
+  const query = `select t.*, u.full_name from taxifast.trips t
+    join taxifast.drivers u
+on u.id = t.driver_id where t.id =? and driver_id = ?;`;
+  const trips = await pool.query(query, [tripId, driverId]);
   return trips[0][0];
 };
 
@@ -83,5 +91,6 @@ module.exports = {
   getTripsByStatus,
   getTripsByUser,
   cancelTrip ,
-  getTripsDriver
+  getTripsDriver,
+  getTripByDriver
 };
