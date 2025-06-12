@@ -76,6 +76,16 @@ const cancelTrip = async (req, res, next) => {
   }
 }
 
+const endTrip = async (req, res, next) => {
+  try {
+    const { idTrip, idDriver } = req.params;
+    const trip = await model.endTrip(idTrip, idDriver);
+    res.status(200).json(trip);
+  } catch (error) {
+    console.error("Error al finalizar viaje:", error);
+    res.status(500).json({ error: "Error al finalizar viaje" });
+  }
+}
 
 module.exports = {
   createTrip,
@@ -84,5 +94,6 @@ module.exports = {
   getTripsByUser,
   cancelTrip ,
   getTripsByDriver,
-  getTripByDriver
+  getTripByDriver,
+  endTrip,
 };
