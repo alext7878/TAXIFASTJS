@@ -45,7 +45,7 @@ const acceptTrip = async (idTrip, data) => {
 const getTripsByStatus = async (status) => {
   const query = `select t.*, u.full_name from taxifast.trips t
     join taxifast.users u
-on u.id = t.user_id where status = ?;`;
+    on u.id = t.user_id where status = ?;`;
   const trips = await pool.query(query, [status]);
   return trips[0];
 };
@@ -53,23 +53,27 @@ on u.id = t.user_id where status = ?;`;
 const getTripsByUser = async (userId) => {
   const query = `select t.*, u.full_name from taxifast.trips t
     join taxifast.users u
-on u.id = t.user_id where user_id = ? and (t.status =? or t.status =?);`;
+    on u.id = t.user_id where user_id = ? 
+    and (t.status =? or t.status =?);`;
   const trips = await pool.query(query, [userId, "Pendiente", "En Curso"]);
   return trips[0][0];
 };
 
 const getTripsDriver = async (driverId) => {
   const query = `select t.*, u.full_name from taxifast.trips t
-    join taxifast.drivers u
-on u.id = t.driver_id where driver_id = ?;`;
+      join taxifast.drivers u
+      on u.id = t.driver_id where driver_id = ?;`;
   const trips = await pool.query(query, [driverId]);
   return trips[0][0];
 };
 
 const getTripByDriver = async (driverId, tripId) => {
   const query = `select t.*, u.full_name from taxifast.trips t
-    join taxifast.drivers u
-on u.id = t.driver_id where t.id =? and driver_id = ?;`;
+      join taxifast.drivers d
+      on d.id = t.driver_id 
+      join taxifast.users u
+      on u.id = t.user_id 
+      where t.driver_id = ? and t.status =?;`;
   const trips = await pool.query(query, [tripId, driverId]);
   return trips[0][0];
 };
