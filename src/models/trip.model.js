@@ -51,29 +51,37 @@ const getTripsByStatus = async (status) => {
 };
 
 const getTripsByUser = async (userId) => {
-  const query = `select t.*, u.full_name from taxifast.trips t
+  const query = `select t.*, 
+    u.full_name as user, 
+    d.full_name as driver
+    from taxifast.trips t
     join taxifast.users u
-    on u.id = t.user_id where user_id = ? 
+    on u.id = t.user_id 
+    join taxifast.drivers d
+    on d.id = t.driver_id 
+    where user_id = ? 
     and (t.status =? or t.status =?);`;
   const trips = await pool.query(query, [userId, "Pendiente", "En Curso"]);
   return trips[0][0];
 };
 
 const getTripsByDriver = async (driverId) => {
-  const query = `select t.*, u.full_name from taxifast.trips t
-      join taxifast.drivers u
-      on u.id = t.driver_id where driver_id = ?;`;
-  const trips = await pool.query(query, [driverId]);
+  const query = `select t.*, u.full_name 
+      from taxifast.trips t
+        join taxifast.drivers d
+        on d.id = t.driver_id
+        join taxifast.users u
+        on u.id = t.user_id 
+      where t.driver_id = ? and t.status = ?;`;
+  const trips = await pool.query(query, [driverId, "En Curso"]);
   return trips[0][0];
 };
 
 const getTripByDriver = async (driverId, tripId) => {
-  const query = `select t.*, u.full_name from taxifast.trips t
+  const query = `select t.* from taxifast.trips t
       join taxifast.drivers d
       on d.id = t.driver_id 
-      join taxifast.users u
-      on u.id = t.user_id 
-      where t.id and t.driver_id = ? and t.status =?;`;
+      where t.id =? and t.driver_id = ? and t.status =?;`;
   const trips = await pool.query(query, [tripId, driverId, "En Curso"]);
   return trips[0][0];
 };
@@ -89,6 +97,17 @@ const cancelTrip = async (idTrip, idUser) => {
   return trip;
 };
 
+const endTrip = async (idTrip, idDriver) => {
+  const query = `update taxifast.trips set status = ? where id = ? and driver_id = ?`;
+
+  const trip = await pool.query(query, [
+    "Finalizado",
+    idTrip,
+    idDriver
+  ]);
+  return trip;
+};
+
 module.exports = {
   createTrip,
   acceptTrip,
@@ -96,5 +115,6 @@ module.exports = {
   getTripsByUser,
   cancelTrip ,
   getTripsByDriver,
-  getTripByDriver
+  getTripByDriver,
+  endTrip
 };
